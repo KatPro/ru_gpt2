@@ -6,9 +6,15 @@ There is new function "Sample until" which will sample sequence from GPT-2 until
 
 You can get this token from executing file to_token_convertor.
 
-There is new all in one class which will help you understand how to evaluate the model.
+There is new all in one class which will help you understand how to evaluate the model. (evaluate_model.py)
+
+Different rest.py, which uses new model class.
 
 Every file has argparser with --help, don't hesitate refering to this.
+
+Here's my google colab GPU notebook: https://colab.research.google.com/drive/1jwFks82BLyy8x3oxyKpiNdlL1PfKSQwW?usp=sharing
+
+If you happen to know how to use TPU with google colab, please, contact me.
 
 # 1. I just want to play with your models
 
