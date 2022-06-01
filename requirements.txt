@@ -1,0 +1,8 @@
+Cython==0.29.30
+pymorphy2==0.9.1
+pymorphy2-dicts-ru==2.4.417127.4579844
+tokenizers==0.12.1
+torch==1.11.0
+transformers==2.1.0
+youtokentome==1.0.6
+spacy==3.3.0
