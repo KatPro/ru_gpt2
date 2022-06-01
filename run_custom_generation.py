@@ -260,34 +260,43 @@ def main(nlp, morpher):
     parser.add_argument('--temperature', type=float, default=1.0)
     parser.add_argument('--top_k', type=int, default=0)
     parser.add_argument('--top_p', type=float, default=0.9)
-    parser.add_argument('--no_cuda', action='store_true',
-                        help='Avoid using CUDA when available')
-    parser.add_argument('--seed', type=int, default=42,
-                        help='Random seed for initialization')
+    parser.add_argument('--no_cuda', action='store_true', help='Avoid using CUDA when available')
+    parser.add_argument('--default_text', action='store_true', help='Use default text')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed for initialization')
 
     parser.add_argument('--name', type=str, help='NAME value', required=False)
     parser.add_argument('--org', type=str, help='ORG value', required=False)
     
     args = parser.parse_args()
 
-    args.device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')
-    args.n_gpu = torch.cuda.device_count()
+    if args.default_text:
+        text = ''' Уважаемые друзья! Приветствую вас в ORG по случаю открытия Всемирного конгресса молодых режиссе <UNK> ров .
+Встреча проходит в начале июля в Екатеринбурге и посвящена знаменательнои <UNK> дате – 9 0 - летию со дня рождения великого NAME .
+Многие годы это легендарное творческое объединение поддерживает и развивает талантливых , энергичных молодых артистов .
+Их блестящеи <UNK> творческии <UNK> путь отмечен поистине золотым , впечатляющим триумфом , которои <UNK> они неизменно одерживают .
+И конечно , отмечу огромную , востребованную работу ORG в продвижении в обществе ценностеи <UNK> мультипликации ,
+россии <UNK> ского кинематографа , творческои <UNK> деятельности молодых художников . Желаю вам плодотворного общения , успехов и всего самого доброго .
+'''
+    else:
 
-    set_seed(args)
+        args.device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')
+        args.n_gpu = torch.cuda.device_count()
 
-    tokenizer = YTEncoder.from_pretrained(args.model_name_or_path)
-    model = GPT2LMHeadModel.from_pretrained(args.model_name_or_path)
-    model.to(args.device)
-    model.eval()
+        set_seed(args)
 
-    if args.length < 0 and model.config.max_position_embeddings > 0:
-        args.length = model.config.max_position_embeddings
-    elif 0 < model.config.max_position_embeddings < args.length:
-        args.length = model.config.max_position_embeddings  # No generation bigger than model size 
+        tokenizer = YTEncoder.from_pretrained(args.model_name_or_path)
+        model = GPT2LMHeadModel.from_pretrained(args.model_name_or_path)
+        model.to(args.device)
+        model.eval()
 
-    context_tokens = tokenizer.encode(START_TAG)
+        if args.length < 0 and model.config.max_position_embeddings > 0:
+            args.length = model.config.max_position_embeddings
+        elif 0 < model.config.max_position_embeddings < args.length:
+            args.length = model.config.max_position_embeddings  # No generation bigger than model size 
 
-    text = generate(context_tokens, model, tokenizer, args)
+        context_tokens = tokenizer.encode(START_TAG)
+
+        text = generate(context_tokens, model, tokenizer, args)
 
     logging.info('Generated text: ' + text)
 
@@ -305,6 +314,6 @@ if __name__ == '__main__':
 
     
     nlp = spacy.load('ru_core_news_sm')
-
     morpher = pymorphy2.MorphAnalyzer()
+    
     text = main(nlp, morpher)
